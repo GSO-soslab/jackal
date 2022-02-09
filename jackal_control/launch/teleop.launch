@@ -2,6 +2,13 @@
   <arg name="joy_dev" default="$(optenv JACKAL_JOY_DEVICE /dev/input/ps4)" />
   <arg name="joystick" default="true" />
 
+  <!-- Keep in mind that this repository exist for educational purposes.
+       The tutorial in which this code is used is to show how important
+       it is to use a controller rather than controlling individual
+       wheels to student. Please, do not use it in anywhere near by the
+       production environment. -->
+  <arg name="make_it_harder" default="false"/>
+
   <group ns="bluetooth_teleop" if="$(arg joystick)">
 
     <group unless="$(optenv JACKAL_PS3 0)" >
@@ -16,7 +23,14 @@
 
     <node pkg="joy" type="joy_node" name="joy_node" />
 
-    <node pkg="teleop_twist_joy" type="teleop_node" name="teleop_twist_joy"/>
+		<group unless="$(arg make_it_harder)">
+    	<node pkg="teleop_twist_joy" type="teleop_node" name="teleop_twist_joy"/>
+		</group>
+
+		<group if="$(arg make_it_harder)">
+      <node pkg="jackal_base" type="simple_joy_node" name="uncontrolled_teleop_twist_joy"/>
+		</group>
+      
   </group>
 
   <node pkg="interactive_marker_twist_server" type="marker_server" name="twist_marker_server"/>
